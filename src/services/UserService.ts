@@ -21,12 +21,14 @@ class UserService {
     user.password = await this._hashPassword(user.password)
 
     const createdUser = await UserRepository.create(user)
+    const token = this._generateToken(createdUser.username)
 
     const response: IUserRegister = {
       username: createdUser.username,
       email: createdUser.email,
       firstName: createdUser.firstName,
-      lastName: createdUser.lastName
+      lastName: createdUser.lastName,
+      token: token
     }
     return Result.ok<IUserRegister>(response)
   }
@@ -44,12 +46,7 @@ class UserService {
       return Result.fail<IUserAuthenticate>('Incorrect password')
     }
 
-    const { secret } = config.get('jwt')
-    const token = jwt.sign({ id: username }, secret , {
-      subject: username,
-      expiresIn: '1d'
-    })
-
+    const token = this._generateToken(username)
     const response: IUserAuthenticate = {
       username: username,
       token: token
@@ -60,6 +57,14 @@ class UserService {
 
   private async _hashPassword(password: string): Promise<string>{
     return await bcrypt.hash(password, 10)
+  }
+
+  private _generateToken(username: string): string {
+    const { secret } = config.get('jwt')
+    return jwt.sign({ id: username }, secret , {
+             subject: username,
+             expiresIn: '1d'
+           })
   }
 }
 
