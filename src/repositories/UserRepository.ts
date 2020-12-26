@@ -7,6 +7,10 @@ class UserRepository extends BaseRepository<IUserDocument, IUser>{
   constructor(){
     super(User)
   }
+
+  public async findOneToAuthenticate(where: any): Promise<IUserDocument> {
+    return this._model.findOne(where).select('+password')
+  }
 }
 
 export default new UserRepository()

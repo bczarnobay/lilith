@@ -3,22 +3,62 @@ import { IUserDocument } from "src/models/schemas/User";
 import UserRepository from "src/repositories/UserRepository";
 import { Result } from "./Result";
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+import config from 'config'
+import { IUserAuthenticate, IUserRegister } from "src/models/interfaces/user-responses";
 
 class UserService {
-  public async createUser(user: IUser): Promise<Result<IUserDocument>> {
+ 
+  public async createUser(user: IUser): Promise<Result<IUserRegister>> {
     const userAlreadyInUse = await UserRepository.findOne(
-        { $or: [{userId: user.userId}, { email: user.email}]}
+        { $or: [{username: user.username}, { email: user.email}]}
     )
     
     if(userAlreadyInUse){
-      return Result.fail<IUserDocument>('Username or email already in use')
+      return Result.fail<IUserRegister>('Username or email already in use')
     }
     
     user.password = await this._hashPassword(user.password)
-    return Result.ok<IUserDocument>(await UserRepository.create(user))
+
+    const createdUser = await UserRepository.create(user)
+
+    const response: IUserRegister = {
+      username: createdUser.username,
+      email: createdUser.email,
+      firstName: createdUser.firstName,
+      lastName: createdUser.lastName
+    }
+    return Result.ok<IUserRegister>(response)
   }
 
-  private async _hashPassword(password: string): Promise<any>{
+  public async authenticateUser(username: string, password: string): Promise<Result<IUserAuthenticate>> {
+    const user = await UserRepository.findOneToAuthenticate({username: username})
+
+    if(!user){
+      return Result.fail<IUserAuthenticate>('User not found')
+    }
+
+    const matchPassword = await bcrypt.compare(password, user.password)
+
+    if(!matchPassword){
+      return Result.fail<IUserAuthenticate>('Incorrect password')
+    }
+
+    const { secret } = config.get('jwt')
+    const token = jwt.sign({ id: username }, secret , {
+      subject: username,
+      expiresIn: '1d'
+    })
+
+    const response: IUserAuthenticate = {
+      username: username,
+      token: token
+    }
+
+    return Result.ok<IUserAuthenticate>(response)
+  }
+
+  private async _hashPassword(password: string): Promise<string>{
     return await bcrypt.hash(password, 10)
   }
 }
