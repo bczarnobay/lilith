@@ -1,6 +1,6 @@
 export interface IUser {
   // id?: any,
-  userId: string
+  username: string
   email: string,
   firstName: string,
   lastName: string,

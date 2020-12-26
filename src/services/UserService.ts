@@ -61,7 +61,7 @@ class UserService {
 
   private _generateToken(username: string): string {
     const { secret } = config.get('jwt')
-    return jwt.sign({ id: username }, secret , {
+    return jwt.sign({ username: username }, secret , {
              subject: username,
              expiresIn: '1d'
            })
