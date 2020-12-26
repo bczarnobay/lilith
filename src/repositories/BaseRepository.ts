@@ -17,8 +17,8 @@ import { Model } from 'mongoose'
     return this._model.create(item)
   }
 
-  public async findOne(id: string): Promise<T> {
-    return this._model.findOne({ id })
+  public async findOne(where: any): Promise<T> {
+    return this._model.findOne(where)
   }
 
   public async count(where: any): Promise<number> {

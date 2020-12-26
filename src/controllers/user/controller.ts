@@ -6,6 +6,10 @@ class UserController {
   public async register(req: Request, res: Response) : Promise<Response> {
     const { email, firstName, lastName, password, userId } = req.body
     
+    if(!email || !firstName || !userId || !password) {
+      return res.status(400).send({ message: 'Information missing'})
+    }
+
     const user: IUser = {
       email: email,
       firstName: firstName,
@@ -19,9 +23,8 @@ class UserController {
     if(result.isSuccess){
       return res.json(result.getValue())
     } else {
-      return res.status(400).send(result.error)
-    }
-    
+      return res.status(400).send({message: result.error})
+    }    
   }
 }
 
