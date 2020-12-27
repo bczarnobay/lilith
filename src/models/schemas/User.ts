@@ -1,4 +1,4 @@
-import mongoose, { Mongoose } from 'mongoose'
+import mongoose from 'mongoose'
 import { IUser } from '../interfaces/user'
 
 export interface IUserDocument extends mongoose.Document, IUser {}
