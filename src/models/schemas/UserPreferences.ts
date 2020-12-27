@@ -11,7 +11,7 @@ const UserPreferencesSchema = new mongoose.Schema(
       required: true
     },
     preferences: [{
-      type: { enum: ['currency', 'stock'] },
+      type: { type: String, enum: ['currency', 'stock'] },
       id: { type: String}
     }]
   }

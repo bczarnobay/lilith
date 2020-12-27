@@ -25,6 +25,10 @@ import { Model } from 'mongoose'
     return this._model.count(where)
   }
 
+  public async findOneAndUpdate (where, data, options) : Promise<T> {
+    return this._model.findOneAndUpdate(where, data, options)
+  }
+
   // update(id: string, item: T): Promise<boolean> {
   //   throw new Error('Method not implemented.')
   // }
