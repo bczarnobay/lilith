@@ -4,3 +4,6 @@ mongo:
   url: 'mongodb+srv://admin:admin@cluster01.nj79u.mongodb.net/lilith?retryWrites=true&w=majority'
 jwt:
   secret: '9fbc6b65fdbc284d4c8c71d418064cfd'
+fixerApi:
+  url: http://data.fixer.io/api
+  apiKey: 5150312477932a20f1e9613cb65dfd9a
